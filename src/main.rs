@@ -1,7 +1,9 @@
 #![feature(rust_2018_preview, process_exitcode_placeholder, use_extern_macros)]
 
-#[macro_use] extern crate log;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate serde_derive;
 
 mod cli;
 mod list;
@@ -21,12 +23,15 @@ const WORD_LIST_BYTES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/bytes")
 
 lazy_static! {
   static ref WORD_LISTS: Vec<WordList> = {
-    rmp_serde::decode::from_read(XzDecoder::new(WORD_LIST_BYTES)).expect("invalid internal serialization")
+    rmp_serde::decode::from_read(XzDecoder::new(WORD_LIST_BYTES))
+      .expect("invalid internal serialization")
   };
 }
 
 fn word_list(name: &str) -> Option<&WordList> {
-  WORD_LISTS.iter().find(|x| x.short_names.contains(&name.to_string()))
+  WORD_LISTS
+    .iter()
+    .find(|x| x.short_names.contains(&name.to_string()))
 }
 
 fn main() -> ExitCode {
@@ -42,19 +47,23 @@ fn main() -> ExitCode {
     Ok(x) if x == 0 => {
       eprintln!("must use at least one word");
       return ExitCode::FAILURE;
-    },
+    }
     Ok(x) => x,
     Err(e) => {
       eprintln!("invalid amount of words: {}", e);
       return ExitCode::FAILURE;
-    },
+    }
   };
-  let num_pws: usize = match args.value_of("passphrases").expect("passphrases value missing").parse() {
+  let num_pws: usize = match args
+    .value_of("passphrases")
+    .expect("passphrases value missing")
+    .parse()
+  {
     Ok(x) => x,
     Err(e) => {
       eprintln!("invalid amount of passphrases: {}", e);
       return ExitCode::FAILURE;
-    },
+    }
   };
 
   if args.is_present("verbose") {

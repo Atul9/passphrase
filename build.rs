@@ -12,10 +12,8 @@ use std::{
 };
 
 // read the json into the build program
-const METADATA_JSON: &'static str = include_str!(concat!(
-  env!("CARGO_MANIFEST_DIR"),
-  "/lists/metadata.json",
-));
+const METADATA_JSON: &'static str =
+  include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/lists/metadata.json",));
 
 // metadata format structs
 
@@ -70,7 +68,11 @@ fn main() {
   let bytes_file = File::create(&bytes_path).unwrap();
 
   // write out the data
-  lists.serialize(&mut rmp_serde::encode::Serializer::new(XzEncoder::new(bytes_file, 9))).unwrap();
+  lists
+    .serialize(&mut rmp_serde::encode::Serializer::new(XzEncoder::new(
+      bytes_file, 9,
+    )))
+    .unwrap();
 }
 
 fn parse(content: &str) -> HashMap<u32, String> {
@@ -78,11 +80,13 @@ fn parse(content: &str) -> HashMap<u32, String> {
     .split('\n')
     .filter(|x| !x.is_empty())
     .map(|x| x.split('\t'))
-    .map(|mut x| (
-      // parse the first segment as a u32
-      x.next().unwrap().parse::<u32>().unwrap(),
-      // parse the second segment as a string
-      x.next().unwrap().to_string(),
-    ))
+    .map(|mut x| {
+      (
+        // parse the first segment as a u32
+        x.next().unwrap().parse::<u32>().unwrap(),
+        // parse the second segment as a string
+        x.next().unwrap().to_string(),
+      )
+    })
     .collect()
 }
